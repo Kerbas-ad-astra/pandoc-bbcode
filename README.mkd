@@ -1,7 +1,7 @@
 [link:pandoc]: <http://johnmacfarlane.net/pandoc/README.html>
-[link:writer]: <https://raw.githubusercontent.com/2ion/pandoc-bbcode/master/panbbcode.lua>
+[link:writer]: <https://github.com/2ion/pandoc-bbcode/archive/master.tar.gz>
 [link:github]: <https://github.com/2ion/pandoc-bbcode>
-[link:this]: <https://raw.githubusercontent.com/2ion/pandoc-bbcode/master/README.mkd>
+[link:this]:   <https://raw.githubusercontent.com/2ion/pandoc-bbcode/master/README.mkd>
 
 # pandoc-bbcode: Write #! forum posts in Markdown (or anything else)
 
