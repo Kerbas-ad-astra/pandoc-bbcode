@@ -1,5 +1,7 @@
--- panbbcode
--- BBCode writer for pandoc
+-- panbbcode - BBCode writer for pandoc
+-- Copyright (C) 2014 Jens Oliver John < dev ! 2ion ! de >
+-- Licensed under the GNU General Public License v3 or later.
+-- Written for Lua 5.{1,2}
 
 -- PRIVATE
 
