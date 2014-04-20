@@ -1,5 +1,6 @@
 -- panbbcode
 -- BBCode writer for pandoc
+-- beta1
 
 -- PRIVATE
 
