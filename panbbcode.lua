@@ -1,11 +1,14 @@
 -- panbbcode
 -- BBCode writer for pandoc
--- beta1
 
 -- PRIVATE
 
-local function enclose(t, s)
-  return string.format("[%s]%s[/%s]", t, s, t)
+local function enclose(t, s, p)
+  if p then
+    return string.format("[%s=%s]%s[/%s]", t, p, s, t)
+  else
+    return string.format("[%s]%s[/%s]", t, s, t)
+  end
 end
 
 local function lookup(t, e)
@@ -98,7 +101,7 @@ function Doc( body, meta, vars )
   end
   _(body)
   if #cache_notes > 0 then
-    _("---")
+    _("--")
     for i,n in ipairs(cache_notes) do
       _(string.format("[%d] %s", i, n))
     end
@@ -143,18 +146,18 @@ function Strikeout(s)
 end
 
 function Link(s, src, title)
-  return string.format("[url=%s]%s[/url]", src, s)
+  return enclose('url', s, src)
 end
 
 function Image(s, src, title)
-  return string.format("[img=%s]%s[/img]", src, s)
+  return enclose('img', s, src)
 end
 
 function CaptionedImage(src, attr, title)
-  if not title or title=="" then
+  if not title or title == "" then
     return enclose('img', src)
   else
-    return string.format("[img=%s]%s[/img]", title, src)
+    return enclose('img', src, title)
   end
 end
 
@@ -200,7 +203,7 @@ end
 function BlockQuote(s)
   local a, t = s:match('@([%w]+): (.+)')
   if a then
-    return string.format("[quote=%s]%s[/quote]",a,t or "")
+    return enclose('quote', t or "Unknown" , a)
   else
     return enclose('quote', s)
   end
