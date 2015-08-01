@@ -129,12 +129,14 @@ will be fixed by the time Lua 5.3 has been released. But now here's how
 a pipe table translates into a fake BBCode table:
 
 ```
-|---------------------|---------------------|
-| A sexy cell         | Another sexy cell   |
-| More sexy cells     | in this row         |
+| Table               |                Demo |
+|---------------------|--------------------:|
+| A sexy cell         |   Another sexy cell |
+| More sexy cells     |         in this row |
 ```
-|---------------------|---------------------|
-| A sexy cell         | Another sexy cell   |
-| More sexy cells     | in this row         |
+| Table               |                Demo |
+|---------------------|--------------------:|
+| A sexy cell         |   Another sexy cell |
+| More sexy cells     |         in this row |
 
 

@@ -1,0 +1,96 @@
+[SIZE=+2][b][u]pandoc-bbcode: Write #! forum posts in Markdown (or anything else)[/u][/b][/SIZE]
+
+[SIZE=+1][b][u]Introduction[/u][/b][/SIZE]
+
+I often get annoyed when I write longer forum posts, as my default keyboard layout is the German one where symbols like
+
+[CODE]][[/CODE]
+
+are only accessible through AltGr and thus typing in BBCode requires more movement than it should. In addition, nobody should have to use the horrible input boxes common browsers offer to the user and get the chance to write their forum posts in a capable editor like Vim.
+
+Pentadactyl is a Firefox browser extension that allows me to use my favourite $EDITOR to edit text in inputs, so what was missing was a converter that would translate text I input in a sane markup format like Markdown to BBCode as used in many forums, also here at #!. As such a translator, I wrote a custom writer for the [url=http://johnmacfarlane.net/pandoc/README.html]pandoc[/url] markup converter that converts [I]any markup format pandoc can read[/I] into BBCode -- naturally, some features of more powerful formats like restructured text, LaTeX or DocBook cannot be mapped 1:1 to BBCode due to the lack of support there, but the basic problem has been solved.
+
+In the rest of this post (written in Markdown, BTW), I would like to demonstrate the capabilities of this custom Pandoc writer, so that by combining it with Vim or the like, others may become able to write longer forum posts comfortably, too. Note that some features like underlined text are not available in standard Markdown and thus not presented here, but still may be obtained by using another input format.
+
+The writer itself is available on [url=https://github.com/2ion/pandoc-bbcode/archive/master.tar.gz]Github[/url] ([url=https://github.com/2ion/pandoc-bbcode]repository[/url]), and is to be used with Pandoc in the following way:
+
+[CODE]pandoc -t pandoc-bbcode.lua -o $output $input[/CODE]
+
+The markdown source of this document can be found [url=https://raw.githubusercontent.com/2ion/pandoc-bbcode/master/README.mkd]here[/url]. Note that I consider it still beta software that has a bunch of bugs. If you get bitten by one, or have an improvement, please feel free to file it on [url=https://github.com/2ion/pandoc-bbcode]Github[/url].
+
+[SIZE=+1][b][u]Demonstration[/u][/b][/SIZE]
+
+[b][u]Sectioning[/u][/b]
+
+[SIZE=+2][b][u]First level header[/u][/b][/SIZE]
+
+[SIZE=+1][b][u]Second level header[/u][/b][/SIZE]
+
+[b][u]Third level and other headers[/u][/b]
+
+[b][u]Text emphasis[/u][/b]
+
+[I]Simple emphasis[/I], [b]strong emphasis[/b]
+
+[b][u]Quoting[/u][/b]
+
+[quote]This is a simple block quote[/quote]
+
+If you write a block quote this way
+
+[CODE]> @myself: This is me quoting myself[/CODE]
+
+you get the classic forum quote
+
+[quote=myself]This is me quoting myself[/quote]
+
+[b][u]Footnotes[/u][/b]
+
+We can now do footnotes[1]. They will be put at the very end of the post!
+
+[b][u]Links and images[/u][/b]
+
+We can now do inline links and labelled links! Now link targets can be defined in bulk at the end of the document or right at the beginning (which is my personal preference).
+
+[CODE][This is an inline link](www.example.com)
+[This is a link the target of which is defined elsewhere][link:reference][/CODE]
+
+Images can be included with or without an alt text.
+
+[img=Alt text]http://i.imgur.com/B63RuQLl.jpg[/img]
+
+[b][u]Lists[/u][/b]
+
+Simple, simple, and without using the sick BBCode syntax!
+
+[list][*]Bullet-pointed
+[*]List
+[/list]
+
+[list=1][*]Ordered
+[*]List
+[/list]
+
+[b][u]Tables[/u][/b]
+
+BBCode doesn't render tables, nor allows it raw HTML tags. The only solution for rendering thus is rendering them as ASCII tables. There's just one problem: we can't call column or any other renderer from within the Pandoc writer because it disallows writers to call system functions like popen().
+
+As I don't know of a perfect ASCII table renderer in pure Lua yet, I customized an old columnation function of mine that can render basic tables --- it doesn't do per-column alignment, however, an other things. ATM, you also can't use the @ character in tables as it is used as an escape character (I'll fix this at some point). Another drawback is that there is [I]absolutely no[/I] support for non-ASCII characters at the moment (except German umlauts, for which I wrote special cases). This is due to the lack of native UTF-8 support in Lua string functions. As I don't intend to rewrite the columnation function using any other Unicode implementation before Lua 5.3 with native UTF-8 support comes out, this will be fixed by the time Lua 5.3 has been released. But now here's how a pipe table translates into a fake BBCode table:
+
+[CODE]| Table               |                Demo |
+|---------------------|--------------------:|
+| A sexy cell         |   Another sexy cell |
+| More sexy cells     |         in this row |[/CODE]
+
+[table="width:500"]
+[tr]
+[td]A sexy cell[/td]
+[td][right]Another sexy cell[/right][/td]
+[/tr]
+[tr]
+[td]More sexy cells[/td]
+[td][right]in this row[/right][/td]
+[/tr]
+[/table]
+--
+[1] You see, this is how footnotes work! But BBCode still sucks.
