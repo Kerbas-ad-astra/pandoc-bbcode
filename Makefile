@@ -1,2 +1,2 @@
 README.bbcode: README.mkd panbbcode.lua
-	pandoc -f markdown+pipe_tables -t panbbcode.lua -o $@ --smart $<
+	pandoc -f markdown+pipe_tables -t panbbcodeVBulletin.lua -o $@ --smart $<

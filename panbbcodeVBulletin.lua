@@ -1,5 +1,6 @@
--- panbbcode - BBCode writer for pandoc
--- Copyright (C) 2014 Jens Oliver John < dev ! 2ion ! de >
+-- panbbcodeVBulletin - BBCode writer for pandoc
+-- Copyright (C) 2015 Kerbas_ad_astra
+-- Based on panbbcode, Copyright (C) 2014 Jens Oliver John < dev ! 2ion ! de >
 -- Licensed under the GNU General Public License v3 or later.
 -- Written for Lua 5.{1,2}
 
@@ -10,6 +11,14 @@ local function enclose(t, s, p)
     return string.format("[%s=%s]%s[/%s]", t, p, s, t)
   else
     return string.format("[%s]%s[/%s]", t, s, t)
+  end
+end
+
+local function prepend(t, s, p)
+  if p then
+    return string.format("[%s=%s]%s", t, p, s)
+  else
+    return string.format("[%s]%s", t, s)
   end
 end
 
@@ -124,7 +133,7 @@ function LineBreak()
 end
 
 function Emph(s)
-  return enclose('em', s)
+  return enclose('I', s)
 end
 
 function Strong(s)
@@ -132,11 +141,11 @@ function Strong(s)
 end
 
 function Subscript(s)
-  return string.format("{%s}", s)
+  return enclose('SUB', s)
 end
 
 function Superscript(s)
-  return string.format("[%s]", s)
+  return enclose('SUP', s)
 end
 
 function SmallCaps(s)
@@ -164,7 +173,7 @@ function CaptionedImage(src, attr, title)
 end
 
 function Code(s, attr)
-  return string.format("[code]%s[/code]", s)
+  return string.format("[CODE]%s[/CODE]", s)
 end
 
 function InlineMath(s)
@@ -194,8 +203,10 @@ end
 
 function Header(level, s, attr)
   if level == 1 then
-    return enclose('h', s)
+    return enclose('SIZE', enclose('b', enclose('u', s)), '+2')
   elseif level == 2 then
+	return enclose('SIZE', enclose('b', enclose('u', s)), '+1')
+  elseif level == 3 then
     return enclose('b', enclose('u', s))
   else
     return enclose('b', s)
@@ -224,13 +235,18 @@ function HorizontalRule(s)
 end
 
 function CodeBlock(s, attr)
-  return enclose('code', s)
+  return enclose('CODE', s)
 end
 
 local function makelist(items, ltype)
-  local buf = string.format("[list=%s]", ltype)
+  local buf = ""
+  if ltype == '*' then
+    buf = "[list]"
+  else
+    buf = string.format("[list=%s]", ltype)
+  end
   for _,e in ipairs(items) do
-    buf = buf .. enclose('*', e) .. '\n'
+    buf = buf .. prepend('*', e) .. '\n'
   end
   buf = buf .. '[/list]'
   return buf
