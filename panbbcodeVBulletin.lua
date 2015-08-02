@@ -22,82 +22,6 @@ local function prepend(t, s, p)
 	end
 end
 
-local function lookup(t, e)
-	for _,v in ipairs(t) do
-		if v == e then
-				return true
-		end
-	end
-	return false
-end
-
-local strlen_ger_utf8_t = { [0xc3] = { 0xa4, 0x84, 0xbc, 0x9c, 0xb6, 0x96, 0x9f } }
-
--- FIXME: check also the byte *after* occurences of 0xc3 (and keep the
--- loop for that)
-local function strlen_ger_utf8(w)
-	local s = {}
-	local len = 0
-	w:gsub("(.)", function (c)
-		table.insert(s, c:byte())
-	end)
-	for i=1,#s do
-		if strlen_ger_utf8_t[s[i]] then
-			i = i + 1
-		else
-			len = len + 1
-		end
-	end
-	return len
-end
-
-local function column(s, sep, blind)
-	local s = s
-	local sep = sep or "	 "
-	local blind = blind or ""
-	local ret = ""
-
-	local y = {}
-	local x = {}
-	local cm = 0
-	local i = 0
-
-	for line in s:gmatch("[^\r\n]+") do
-		local ly = {}
-		local cc = 0
-		line:gsub("[^@]+", function (m)
-			local len = #m
-			cc = cc + 1
-			if cc > cm then 
-				x[cc] = 0
-				cm = cc
-			end
-			if len > x[cc] then
-				x[cc] = len
-			end
-			table.insert(ly, m)
-		end)
-		table.insert(y, ly)
-	end
-	for _,line in ipairs(y) do
-		for tmp=1,(#x-#line) do
-				table.insert(line, blind)
-		end
-		for i,word in ipairs(line) do
-			-- workaround for common German utf-8 umlauts
-			local wl = word:match("[öäüÖÄÜß]") and strlen_ger_utf8(word) or #word
-			if wl < x[i] then
-				for tmp=1,(x[i]-wl) do
-					word = word .. " "
-				end
-			end
-		 ret = ret .. word .. sep
-		end
-		ret = ret .. '\n'
-	end
-	return ret
-end
-
 -- PUBLIC
 
 local cache_notes = {}
@@ -291,6 +215,20 @@ function Table(cap, align, widths, headers, rows)
 		width = 500
 	end
 	add(string.format("[table=\"width:%d\"]",width))
+	add("[tr]")
+	for i,h in ipairs(headers) do
+		local locAlign = align[i]
+		if locAlign == "AlignDefault" then
+			add(enclose('td',Strong(h)))
+		elseif locAlign == "AlignCenter" then
+			add(enclose('td',enclose("center",Strong(h))))
+		elseif locAlign == "AlignLeft" then
+			add(enclose('td',enclose("left",Strong(h))))
+		elseif locAlign == "AlignRight" then
+			add(enclose('td',enclose("right",Strong(h))))
+		end
+	end
+	add("[/tr]")
 	
 	for _,r in ipairs(rows) do
 		add("[tr]")
