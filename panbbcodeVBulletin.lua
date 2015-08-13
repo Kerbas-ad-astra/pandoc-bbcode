@@ -89,11 +89,11 @@ function Image(s, src, title)
 end
 
 function CaptionedImage(src, attr, title)
-	if not title or title == "" then
-		return enclose('img', src)
-	else
-		return enclose('img', src, title)
-	end
+	-- if not title or title == "" then
+		return enclose('img', src) -- Commented out "title" line since the forums don't seem to like [img=blah].
+	-- else
+		-- return enclose('img', src, title)
+	-- end
 end
 
 function Code(s, attr)
